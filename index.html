@@ -9,29 +9,40 @@
     :root { --maxw: 1100px; --pad: 16px; }
     body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height:1.5; color:#111; }
     header { position:relative; }
+
+    /* HERO */
     .hero {
       position: relative;
       width: 100%;
-      height: min(70vh, 56.25vw); /* responsive, never too tall */
+      height: min(70vh, 56.25vw); /* responsive height */
       overflow: hidden;
     }
-
-    .hero iframe {
-      position: absolute; inset: 0; width: 100%; height: 100%;
+    .iframe-crop {
+      position: absolute; inset: 0;
+      overflow: hidden;
+    }
+    .iframe-crop iframe {
+      position: absolute;
+      width: 140%;         /* zoom the embed */
+      height: 140%;
+      left: -20%;          /* adjust these four values to aim at the equity chart */
+      top: -5%;
       border: 0;
       z-index: 1;
-      pointer-events: none;       /* prevents the iframe from stealing scroll/clicks in the hero */
+      pointer-events: none; /* hero is a preview; interaction via the button/modal */
     }
     .overlay {
       position: absolute; inset: 0;
       display: flex; align-items: center; justify-content: center;
       text-align: center; color: #fff; padding: 24px;
-      z-index: 2;                               /* ensure overlay is above iframe */
-      background: linear-gradient(0deg, rgba(0,0,0,.60), rgba(0,0,0,.60)); /* darker for readability */
-      backdrop-filter: blur(2px);               /* optional: softens the busy UI behind */
+      z-index: 2;
+      background: linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.55));
+      backdrop-filter: blur(2px);
     }
     .overlay h1 { margin:0 0 8px 0; font-size: clamp(24px, 3.5vw, 42px); }
     .overlay p { margin:0; font-size: clamp(14px, 2.2vw, 18px); opacity:.95; }
+
+    /* MAIN */
     main { max-width: var(--maxw); margin: 32px auto; padding: 0 var(--pad); }
     section { margin: 48px 0; }
     h2 { margin: 0 0 12px 0; font-size: 26px; }
@@ -50,28 +61,57 @@
     .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:#111; color:#fff; text-decoration:none; }
     .btn:hover { filter:brightness(1.1); }
     .links { margin-top:8px; font-size:14px; }
+
+    /* MODAL */
+    .modal { position: fixed; inset: 0; display: none; z-index: 9999; }
+    .modal.show { display: block; }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
+    .modal-content {
+      position: absolute; top: 5%; left: 50%; transform: translateX(-50%);
+      width: min(1200px, 94vw); height: 90vh;
+      background: #000; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,.5);
+    }
+    .modal-content iframe { width: 100%; height: 100%; border: 0; }
+    .modal-close {
+      position: absolute; top: 8px; right: 12px;
+      background: rgba(255,255,255,.12); color: #fff;
+      border: 0; width: 36px; height: 36px; border-radius: 8px;
+      font-size: 24px; line-height: 36px; cursor: pointer;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.25); }
   </style>
 </head>
 <body>
 
 <header>
   <div class="hero">
-    <!-- Replace src with your QC embed URL. You can append ?theme=darkly -->
-    <iframe src="https://www.quantconnect.cloud/live/24357439/a16eddd2a3681b803e2c68669e7a2ce2b045b5ffe3290168b1995737ad2f1c5d/?theme=darkly"></iframe>
-  <div class="overlay">
-    <div>
-      <h1>From Idea to Execution: My End-to-End Quant Trading Project</h1>
-      <p>I learned the full QuantConnect workflow and built a custom social sentiment signal to improve timing.</p>
-      <div class="badge">Status: Live (paper) on QuantConnect</div>
-    
-      <!-- Live QC button -->
-      <p style="margin-top:12px">
-        <a class="btn" href="https://www.quantconnect.cloud/live/24357439/a16eddd2a3681b803e2c68669e7a2ce2b045b5ffe3290168b1995737ad2f1c5d/?theme=darkly" target="_blank" rel="noopener">Open Live Results</a>
-      </p>
+    <!-- Cropped/zoomed preview of the live QC embed -->
+    <div class="iframe-crop">
+      <iframe id="qcHero" src="https://www.quantconnect.cloud/live/24357439/a16eddd2a3681b803e2c68669e7a2ce2b045b5ffe3290168b1995737ad2f1c5d/?theme=darkly"></iframe>
+    </div>
+
+    <div class="overlay">
+      <div>
+        <h1>From Idea to Execution: My End-to-End Quant Trading Project</h1>
+        <p>I learned the full QuantConnect workflow and built a custom social sentiment signal to improve timing.</p>
+        <div class="badge">Status: Live (paper) on QuantConnect</div>
+        <p style="margin-top:12px">
+          <a class="btn" id="openModal" href="#" aria-haspopup="dialog">Open Live Results</a>
+        </p>
+      </div>
     </div>
   </div>
-  </div>
 </header>
+
+<!-- Full-screen modal with the fully interactive QC page -->
+<div id="liveModal" class="modal" aria-hidden="true" role="dialog" aria-label="Live QuantConnect Results">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-content">
+    <button class="modal-close" title="Close" aria-label="Close" data-close>&times;</button>
+    <iframe src="https://www.quantconnect.cloud/live/24357439/a16eddd2a3681b803e2c68669e7a2ce2b045b5ffe3290168b1995737ad2f1c5d/?theme=darkly" title="QuantConnect Live Results"></iframe>
+  </div>
+</div>
 
 <main>
 
@@ -168,6 +208,22 @@
 <script>
   document.getElementById('last-updated').textContent =
     new Date().toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+
+  // Modal controls
+  const modal = document.getElementById('liveModal');
+  const openBtn = document.getElementById('openModal');
+  function openModal(e){
+    if(e) e.preventDefault();
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  function closeModal(){
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  document.getElementById('openModal').addEventListener('click', openModal);
+  modal.addEventListener('click', (e)=>{ if(e.target.hasAttribute('data-close')) closeModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
 </script>
 
 </body>
