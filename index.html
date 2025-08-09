@@ -2,11 +2,152 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <title>From Idea to Execution: My End‑to‑End Quant Trading Project</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Coming soon…</title>
+  <meta name="description" content="End-to-end quant trading on QuantConnect with a custom social sentiment signal.">
+  <style>
+    :root { --maxw: 1100px; --pad: 16px; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height:1.5; color:#111; }
+    header { position:relative; }
+    .hero { position:relative; width:100%; overflow:hidden; }
+    .hero::before { content:""; display:block; padding-top:56.25%; } /* 16:9 */
+    .hero iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+    .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(0deg, rgba(0,0,0,.45), rgba(0,0,0,.45)); text-align:center; color:#fff; padding: 24px; }
+    .overlay h1 { margin:0 0 8px 0; font-size: clamp(24px, 3.5vw, 42px); }
+    .overlay p { margin:0; font-size: clamp(14px, 2.2vw, 18px); opacity:.95; }
+    main { max-width: var(--maxw); margin: 32px auto; padding: 0 var(--pad); }
+    section { margin: 48px 0; }
+    h2 { margin: 0 0 12px 0; font-size: 26px; }
+    .grid { display:grid; gap:16px; grid-template-columns: 1fr; }
+    @media(min-width:900px){ .grid-2 { grid-template-columns: 1fr 1fr; } }
+    figure { margin:0; background:#f6f7f9; border-radius:12px; padding:12px; }
+    img { width:100%; height:auto; border-radius:8px; display:block; }
+    .table-wrap { overflow-x:auto; background:#f6f7f9; border-radius:12px; padding:12px; }
+    table { border-collapse:collapse; width:100%; font-size:14px; }
+    th, td { padding:8px 10px; border-bottom:1px solid #e5e7eb; text-align:left; }
+    footer { border-top:1px solid #eee; padding:24px; text-align:center; color:#555; }
+    .muted { color:#666; font-size:14px; }
+    .badge { display:inline-block; background:#eef2ff; color:#3730a3; padding:4px 10px; border-radius:999px; font-size:12px; margin-top:10px;}
+    a { color:#0b5fff; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:#111; color:#fff; text-decoration:none; }
+    .btn:hover { filter:brightness(1.1); }
+    .links { margin-top:8px; font-size:14px; }
+  </style>
 </head>
-<body style="font-family:system-ui; padding:40px">
-  <h1>Coming soon…</h1>
-  <p>This will host my QuantConnect live trading showcase.</p>
+<body>
+
+<header>
+  <div class="hero">
+    <!-- Replace src with your QC embed URL. You can append ?theme=darkly -->
+    <iframe src="https://www.quantconnect.cloud/live/24357439/a16eddd2a3681b803e2c68669e7a2ce2b045b5ffe3290168b1995737ad2f1c5d/?theme=darkly"></iframe>
+    <div class="overlay">
+      <div>
+        <h1>From Idea to Execution: My End‑to‑End Quant Trading Project</h1>
+        <p>I learned the full QuantConnect workflow and built a custom social sentiment signal to improve timing.</p>
+        <div class="badge">Status: Live (paper) on QuantConnect</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section id="motivation">
+    <h2>My Motivation</h2>
+    <p>I started trading NVDA, SPY, and Bitcoin and realized I was guessing. Pros don’t guess—they test. I set a goal: learn the complete QuantConnect stack and take a strategy from backtest to live. To make it my own, I built a social sentiment signal and combined it with technical indicators.</p>
+  </section>
+
+  <section id="journey">
+    <h2>My QuantConnect Journey</h2>
+    <div class="grid grid-2">
+      <figure>
+        <figcaption><strong>Step 1 — Control</strong> (Buy &amp; Hold / Mean Reversion)</figcaption>
+        <img src="assets/baseline_curve.png" alt="Baseline control equity curve">
+        <div class="links"><a class="btn" href="#" target="_blank" rel="noopener">View full backtest</a></div>
+      </figure>
+      <figure>
+        <figcaption><strong>Step 2 — Technical Signals</strong> (EMA/RSI/Bollinger)</figcaption>
+        <img src="assets/tech_only_curve.png" alt="Technical-only equity curve">
+        <div class="links"><a class="btn" href="#" target="_blank" rel="noopener">View full backtest</a></div>
+      </figure>
+    </div>
+    <figure style="margin-top:16px;">
+      <figcaption><strong>Step 3 — Optimization</strong> (parameter sweeps to improve Sharpe / reduce drawdown)</figcaption>
+      <img src="assets/opt_table.png" alt="Optimization results table">
+    </figure>
+  </section>
+
+  <section id="sentiment">
+    <h2>My Contribution — Social Sentiment Signal</h2>
+    <p><strong>The idea:</strong> Markets react to narratives. I measured them directly with a sentiment index.</p>
+    <ol>
+      <li>Collected Reddit/news posts on BTC and NVDA</li>
+      <li>Scored them with FinBERT</li>
+      <li>Aggregated to a rolling index</li>
+      <li>Used the index as a filter/weight in my QC strategy</li>
+    </ol>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Strategy</th><th>Sharpe</th><th>Max Drawdown</th><th>CAGR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Buy &amp; Hold</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>Technical Only</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><strong>Technical + Sentiment (mine)</strong></td><td><strong>—</strong></td><td><strong>—</strong></td><td><strong>—</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure style="margin-top:16px;">
+      <figcaption><strong>Side‑by‑side equity curves</strong> (control vs technical vs technical+sentiment)</figcaption>
+      <img src="assets/tech_vs_sentiment.png" alt="Comparison of equity curves">
+    </figure>
+  </section>
+
+  <section id="live-details">
+    <h2>Live Trading Details</h2>
+    <p>The live feed at the top of this page is embedded directly from QuantConnect. I’m running the strategy in paper/live mode with Kraken integration. Orders, fills, and equity curve update automatically. Below is a recent snapshot of trades with buy/sell markers.</p>
+    <figure>
+      <img src="assets/recent_signals.png" alt="Recent trades with buy/sell markers">
+    </figure>
+  </section>
+
+  <section id="tutorial">
+    <h2>Build Your Own (Tutorial)</h2>
+    <ol>
+      <li>Create a QuantConnect account and run the EMA crossover tutorial.</li>
+      <li>Add indicators and compare against a Buy &amp; Hold control.</li>
+      <li>Run a small parameter sweep (avoid overfitting).</li>
+      <li>Add an external signal (like sentiment) as a filter or weight.</li>
+      <li>Paper trade first, then consider live.</li>
+      <li>Track Sharpe, drawdown, and slippage—not just return.</li>
+    </ol>
+    <p>My code and notes: <a href="https://github.com/lvcascao/lvcascao.github.io" target="_blank" rel="noopener">GitHub repository</a>.</p>
+  </section>
+
+  <section id="about">
+    <h2>About Me</h2>
+    <p>I’m a high‑school senior who loves math, history, and finance. I play competitive soccer and I’m curious about how stories move markets. This project taught me to think like a builder: form a hypothesis, test it, and ship something that runs 24/7.</p>
+    <p class="muted">Mentorship: I designed and coded the signals and integration steps. I plugged into a pro‑grade live architecture with guidance from my mentor.</p>
+    <p><a href="https://github.com/lvcascao" target="_blank" rel="noopener">GitHub</a> &middot; <a href="#" target="_blank" rel="noopener">LinkedIn</a> &middot; <a href="mailto:" target="_blank" rel="noopener">Email</a></p>
+  </section>
+
+</main>
+
+<footer>
+  Built with QuantConnect. Thanks to my mentor for architecture guidance. Last updated: <span id="last-updated"></span>.
+</footer>
+
+<script>
+  document.getElementById('last-updated').textContent =
+    new Date().toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+</script>
+
 </body>
 </html>
